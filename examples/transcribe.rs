@@ -1,6 +1,6 @@
 //! Example: Transcribe an audio file
 //!
-//! Usage: cargo run --example transcribe -- path/to/audio.wav [--ultra]
+//! Usage: cargo run --example transcribe -- path/to/audio.wav [--ultra | --redux | --v2]
 
 use fluidaudio_rs::{AsrModelVersion, FluidAudio};
 use std::env;
@@ -25,6 +25,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize ASR (Parakeet v3 by default, Parakeet Ultra with --ultra)
     let version = if args.iter().any(|arg| arg == "--ultra") {
         AsrModelVersion::Ultra
+    } else if args.iter().any(|arg| arg == "--redux") {
+        AsrModelVersion::Redux
+    } else if args.iter().any(|arg| arg == "--v2") {
+        AsrModelVersion::V2
     } else {
         AsrModelVersion::V3
     };

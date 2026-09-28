@@ -51,6 +51,10 @@ pub enum AsrModelVersion {
     V3 = 0,
     /// Parakeet Ultra: post-trained v3 with the same languages and speed.
     Ultra = 1,
+    /// Parakeet Redux: 2-bit re-training of v3, about 220 MB. macOS 15+.
+    Redux = 2,
+    /// Parakeet TDT v2: English-only predecessor of v3.
+    V2 = 3,
 }
 
 /// Errors that can occur when using FluidAudio

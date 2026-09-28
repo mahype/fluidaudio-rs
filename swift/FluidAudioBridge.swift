@@ -36,7 +36,7 @@ class FluidAudioBridgeInternal {
     }
 
     /// Downloads (first run) and loads a Parakeet TDT model. Only versions
-    /// that share the v3 decoder contract are exposed through the FFI, so the
+    /// with the default two-layer decoder are exposed through the FFI, so the
     /// default `TdtDecoderState` below stays valid for all of them.
     func initializeAsr(version: AsrModelVersion) throws {
         let semaphore = DispatchSemaphore(value: 0)
@@ -809,6 +809,8 @@ private func asrModelVersion(from code: Int32) -> AsrModelVersion? {
     switch code {
     case 0: return .v3
     case 1: return .ultra
+    case 2: return .redux
+    case 3: return .v2
     default: return nil
     }
 }
