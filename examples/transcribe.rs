@@ -1,8 +1,8 @@
 //! Example: Transcribe an audio file
 //!
-//! Usage: cargo run --example transcribe -- path/to/audio.wav
+//! Usage: cargo run --example transcribe -- path/to/audio.wav [--ultra]
 
-use fluidaudio_rs::FluidAudio;
+use fluidaudio_rs::{AsrModelVersion, FluidAudio};
 use std::env;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -22,9 +22,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Memory: {:.1} GB", info.memory_gb);
     println!("Apple Silicon: {}\n", audio.is_apple_silicon());
 
-    // Initialize ASR
-    println!("Initializing ASR (this may take a moment on first run)...");
-    audio.init_asr()?;
+    // Initialize ASR (Parakeet v3 by default, Parakeet Ultra with --ultra)
+    let version = if args.iter().any(|arg| arg == "--ultra") {
+        AsrModelVersion::Ultra
+    } else {
+        AsrModelVersion::V3
+    };
+    println!("Initializing ASR {version:?} (this may take a moment on first run)...");
+    audio.init_asr_with_version(version)?;
     println!("ASR initialized!\n");
 
     // Transcribe

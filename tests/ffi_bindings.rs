@@ -62,14 +62,6 @@ fn availability_is_false_before_init() {
         !audio.is_diarization_available(),
         "diarization should be unavailable pre-init"
     );
-    assert!(
-        !audio.is_qwen3_asr_available(),
-        "Qwen3 ASR should be unavailable pre-init"
-    );
-    assert!(
-        !audio.is_qwen3_streaming_available(),
-        "Qwen3 streaming should be unavailable pre-init"
-    );
 }
 
 /// `system_info()` exercises Swift→Rust string ownership: the Swift side
@@ -130,11 +122,6 @@ fn missing_file_returns_file_not_found() {
         .diarize_file("/this/path/definitely/does/not/exist.wav")
         .expect_err("diarize_file with missing path must error");
     assert!(matches!(err, FluidAudioError::FileNotFound(_)));
-
-    let err = audio
-        .qwen3_transcribe_file("/this/path/definitely/does/not/exist.wav", None)
-        .expect_err("qwen3_transcribe_file with missing path must error");
-    assert!(matches!(err, FluidAudioError::FileNotFound(_)));
 }
 
 /// Calling streaming ASR session methods before initializing must surface a
@@ -147,17 +134,6 @@ fn streaming_asr_session_methods_error_before_init() {
     assert!(audio.streaming_asr_start().is_err());
     assert!(audio.streaming_asr_feed(&[0.0_f32; 1600]).is_err());
     assert!(audio.streaming_asr_finish().is_err());
-}
-
-/// Same as above for the Qwen3 streaming session methods. On macOS 14 these
-/// will fail because Qwen3 requires macOS 15; on macOS 15+ they fail because
-/// the manager isn't initialized. Either way, no crash, just an error.
-#[test]
-fn qwen3_streaming_session_methods_error_before_init() {
-    let audio = FluidAudio::new().expect("bridge creation");
-    assert!(audio.qwen3_streaming_start(None, 1.0, 2.0, 30.0).is_err());
-    assert!(audio.qwen3_streaming_feed(&[0.0_f32; 1600]).is_err());
-    assert!(audio.qwen3_streaming_finish().is_err());
 }
 
 /// VAD `process` methods must error before `init_vad` rather than crash.

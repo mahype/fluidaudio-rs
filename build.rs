@@ -39,6 +39,17 @@ fn main() {
     println!("cargo:rustc-link-search=native={}", lib_path.display());
     println!("cargo:rustc-link-lib=static=FluidAudioBridge");
 
+    // FluidAudio >= 0.15 depends on NemoTextProcessing, shipped as a binary
+    // xcframework holding a universal static library. SwiftPM links it into
+    // Swift products, but our static FluidAudioBridge only records the
+    // references, so the final Rust link has to pull it in explicitly.
+    let nemo_dir = swift_build_dir
+        .join("artifacts/fluidaudio/NemoTextProcessing/NemoTextProcessing.xcframework/macos-arm64_x86_64");
+    if nemo_dir.join("libtext_processing_rs.a").exists() {
+        println!("cargo:rustc-link-search=native={}", nemo_dir.display());
+        println!("cargo:rustc-link-lib=static=text_processing_rs");
+    }
+
     // Link Apple frameworks
     println!("cargo:rustc-link-lib=framework=Foundation");
     println!("cargo:rustc-link-lib=framework=AVFoundation");
